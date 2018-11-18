@@ -1,0 +1,6 @@
+/* https://stackoverflow.com/questions/38160951/how-do-i-horizontally-center-a-table-in-bootstrap?rq=1 */
+#jest_table {
+   margin: auto;
+   width: 50% !important; 
+}
+
