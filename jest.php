@@ -11,8 +11,14 @@
 <?php
 require_once 'Expression.php';
 
-$config = array_key_exists('config', $_GET) ?  $_GET['config'] : 'config.php';
-$config = include($config);
+# https://stackoverflow.com/questions/14752470/creating-a-config-file-in-php
+# https://stackoverflow.com/questions/10148328/php-is-include-function-secure
+# https://stackoverflow.com/questions/14614866/nested-arrays-in-ini-file/14614942
+# ==> use json as config file
+
+$config = array_key_exists('config', $_GET) ?  $_GET['config'] : 'config.json';
+$config = json_decode(file_get_contents($config), TRUE);
+
 if (! array_key_exists('keyprefix', $config))
     $config['keyprefix'] = '';
 
