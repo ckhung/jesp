@@ -14,12 +14,14 @@ require_once 'Expression.php';
 # https://stackoverflow.com/questions/14614866/nested-arrays-in-ini-file/14614942
 # ==> use json as config file
 
+$err_log = '';
+
 $config = array_key_exists('c', $_GET) ?  $_GET['c'] : "config.json";
 # https://stackoverflow.com/questions/6224330/understanding-nested-php-ternary-operator
 
 $config = json_decode(file_get_contents($config), TRUE);
 if (! array_key_exists('title', $config))
-    $config['title'] = 'Join, Eval, and Sort Tables';
+    $config['title'] = 'Join, Evaluate, Sort, and Print Tables';
 echo "<h1 style='text-align: center'>$config[title]</h1>";
 
 if (! array_key_exists('keyprefix', $config))
@@ -40,8 +42,6 @@ $N = count($config['col']);
 for ($i=0; $i<$N; ++$i) {
     if (! array_key_exists('var', $config['col'][$i]))
 	$config['col'][$i]['var'] = $config['col'][$i]['name'];
-    if (! array_key_exists('expr', $config['col'][$i]))
-	$config['col'][$i]['expr'] = $config['col'][$i]['var'];
     if (! array_key_exists('format', $config['col'][$i]))
 	$config['col'][$i]['format'] = '%s';
 }
@@ -60,15 +60,21 @@ foreach ($MD as $pkey => $row) {
 
     # pass 1: init variables
     foreach ($config['col'] as $col) {
-	if (array_key_exists('var', $col) and array_key_exists($col['name'], $row)) {
+	if (array_key_exists('var', $col) && array_key_exists($col['name'], $row)) {
 	    $row[$col['var']] = $row[$col['name']];
 	}
     }
     # pass 2: eval expressions
     foreach ($config['col'] as $col) {
+	if (in_array($col, $config['textcols'])) continue;
 	if (array_key_exists('expr', $col)) {
 	    $row[$col['var']] = myeval($col['expr'], $row);
 	}
+
+	if (! array_key_exists($col['var'], $row))
+	    continue 2;
+	    # data is missing from certain files e.g. pkey=="s1469" is missing from 181123.csv
+
 	if (preg_match('/\bnan\b/i', $row[$col['var']]))
 	    continue 2;
     }
@@ -125,6 +131,8 @@ function myeval($expr, $dict) {
     $safeeval = new Expression();
     return $safeeval->evaluate($expr);
 }
+
+echo $err_log;
 
 ?>
 

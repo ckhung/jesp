@@ -17,8 +17,7 @@
       "var": "sid"
     },
     {
-      "name": "名稱",
-      "var": "name"
+      "name": "名稱"
     },
     {
       "name": "收盤價",
@@ -31,7 +30,6 @@
     },
     {
       "name": "五年均B",
-      "var": "div_a5B",
       "expr": "(y18+y17+y16+y15+y14)/5",
       "format": "%.3f"
     },
@@ -41,15 +39,16 @@
     },
     {
       "name": "歷殖率",
-      "var": "dy_past",
       "expr": "div_a5/price*100",
       "format": "%.1f"
     },
     {
       "name": "今殖率",
-      "var": "dy_ty",
       "expr": "y18/price*100",
       "format": "%.1f"
+    },
+    {
+      "name": "名稱"
     }
   ],
   "keep": "dy_past>6"
