@@ -13,11 +13,11 @@ var dtConfig = {
 };
 
 // https://datatables.net/examples/api/counter_columns.html
-var jest = $('#jest_table');
-jest = jest.DataTable(dtConfig);
+var jesp = $('#jesp_table');
+jesp = jesp.DataTable(dtConfig);
 
-jest.on( 'order.dt search.dt', function () {
-  jest.column(0, {search:'applied', order:'applied'}).
+jesp.on( 'order.dt search.dt', function () {
+  jesp.column(0, {search:'applied', order:'applied'}).
     nodes().each( function (cell, i) {
       cell.innerHTML = i+1;
     } );

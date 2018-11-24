@@ -1,6 +1,7 @@
 {
+  "title": "高現金殖利率個股",
   "csvfiles": [
-    "https://v.im.cyut.edu.tw/~ckhung/saas/stock/price.csv",
+    "181123.csv",
     "div.csv"
   ],
   "pkey": "代號",
@@ -12,43 +13,44 @@
   "keep": "dy_ty>4",
   "col": [
     {
-      "disp": "代號",
+      "name": "代號",
       "var": "sid"
     },
     {
-      "disp": "名稱",
+      "name": "名稱",
       "var": "name"
     },
     {
-      "disp": "收盤價",
+      "name": "收盤價",
       "var": "price"
     },
     {
-      "disp": "五年均",
+      "name": "五年均",
       "var": "div_a5",
       "format": "%.3f"
     },
     {
-      "disp": "五年均B",
+      "name": "五年均B",
       "var": "div_a5B",
       "expr": "(y18+y17+y16+y15+y14)/5",
       "format": "%.3f"
     },
     {
-      "disp": "y18",
+      "name": "y18",
       "format": "%.2f"
     },
     {
-      "disp": "歷殖率",
+      "name": "歷殖率",
       "var": "dy_past",
       "expr": "div_a5/price*100",
       "format": "%.1f"
     },
     {
-      "disp": "今殖率",
+      "name": "今殖率",
       "var": "dy_ty",
       "expr": "y18/price*100",
       "format": "%.1f"
     }
-  ]
+  ],
+  "keep": "dy_past>6"
 }

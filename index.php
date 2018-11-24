@@ -1,12 +1,10 @@
 <html>
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
-<link type="text/css" rel="stylesheet" href="jest.css" />
+<link type="text/css" rel="stylesheet" href="jesp.css" />
 <title>Join, Eval, and Sort Tables</title>
 </head>
 <body>
-
-<h1 style="text-align: center">Join, Eval, and Sort Tables</h1>
 
 <?php
 require_once 'Expression.php';
@@ -16,8 +14,13 @@ require_once 'Expression.php';
 # https://stackoverflow.com/questions/14614866/nested-arrays-in-ini-file/14614942
 # ==> use json as config file
 
-$config = array_key_exists('config', $_GET) ?  $_GET['config'] : 'config.json';
+$config = array_key_exists('c', $_GET) ?  $_GET['c'] : "config.json";
+# https://stackoverflow.com/questions/6224330/understanding-nested-php-ternary-operator
+
 $config = json_decode(file_get_contents($config), TRUE);
+if (! array_key_exists('title', $config))
+    $config['title'] = 'Join, Eval, and Sort Tables';
+echo "<h1 style='text-align: center'>$config[title]</h1>";
 
 if (! array_key_exists('keyprefix', $config))
     $config['keyprefix'] = '';
@@ -36,7 +39,7 @@ foreach ($config['csvfiles'] as $csvfn) {
 $N = count($config['col']);
 for ($i=0; $i<$N; ++$i) {
     if (! array_key_exists('var', $config['col'][$i]))
-	$config['col'][$i]['var'] = $config['col'][$i]['disp'];
+	$config['col'][$i]['var'] = $config['col'][$i]['name'];
     if (! array_key_exists('expr', $config['col'][$i]))
 	$config['col'][$i]['expr'] = $config['col'][$i]['var'];
     if (! array_key_exists('format', $config['col'][$i]))
@@ -47,9 +50,9 @@ for ($i=0; $i<$N; ++$i) {
 # https://stackoverflow.com/questions/8220399/php-foreach-pass-by-reference-last-element-duplicating-bug
 #
 # https://stackoverflow.com/questions/10687306/why-do-twitter-bootstrap-tables-always-have-100-width
-echo "<table id='jest_table' width=200px style='width: auto;' class='table table-striped table-bordered'>\n";
+echo "<table id='jesp_table' width=200px style='width: auto;' class='table table-striped table-bordered'>\n";
 echo "<thead>\n<tr><th>排序 ";
-foreach ($config['col'] as $col) echo "<th>$col[disp] ";
+foreach ($config['col'] as $col) echo "<th>$col[name] ";
 echo "\n</thead>\n\n<tbody>";
 foreach ($MD as $pkey => $row) {
     # https://stackoverflow.com/questions/13036160/phps-array-map-including-keys
@@ -57,8 +60,8 @@ foreach ($MD as $pkey => $row) {
 
     # pass 1: init variables
     foreach ($config['col'] as $col) {
-	if (array_key_exists('var', $col) and array_key_exists($col['disp'], $row)) {
-	    $row[$col['var']] = $row[$col['disp']];
+	if (array_key_exists('var', $col) and array_key_exists($col['name'], $row)) {
+	    $row[$col['var']] = $row[$col['name']];
 	}
     }
     # pass 2: eval expressions
@@ -130,6 +133,6 @@ function myeval($expr, $dict) {
   <script type="text/javascript" src="https://code.jquery.com/jquery-3.3.1.min.js"> </script>
   <script type="text/javascript" src="https://cdn.datatables.net/1.10.18/js/jquery.dataTables.min.js"> </script>
   <script type="text/javascript" src="https://cdn.datatables.net/1.10.18/js/dataTables.bootstrap4.min.js"> </script>
-  <script type="text/javascript" src="jest.js"> </script>
+  <script type="text/javascript" src="jesp.js"> </script>
 </body>
 </html>

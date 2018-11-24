@@ -143,10 +143,6 @@ class Expression {
 			throw new ExpressionException('Empty expression');
 		}
 
-		// Illegal colons
-		if (strpos($expression, ':') !== FALSE) {
-			throw new ExpressionException("Illegal character ':'");
-		}
 
 		// Illegal function
 		$functions = &$this->functions;
@@ -158,7 +154,7 @@ class Expression {
 		}
 
 		// Illegal characters
-		if (preg_match('~[^-^+/%*&|<>!=.()0-9a-z,_:]~i', $expression, $match) > 0) {
+		if (preg_match('~[^-^+/%*&|<>!=.()0-9a-z,_\?:]~i', $expression, $match) > 0) {
 			throw new ExpressionException("Illegal character '{$match[0]}'");
 		}
 
