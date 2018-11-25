@@ -39,11 +39,13 @@
     },
     {
       "name": "歷殖率",
+      "var": "dy_past",
       "expr": "div_a5/price*100",
       "format": "%.1f"
     },
     {
       "name": "今殖率",
+      "var": "dy_ty",
       "expr": "y18/price*100",
       "format": "%.1f"
     },

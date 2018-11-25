@@ -4,6 +4,7 @@ var dtConfig = {
   'paging': false,
   'autoWidth': false,
   'table-layout': 'fixed',
+  "fixedHeader": true,
   'columnDefs': [ {
      'searchable': false,
      'orderable': false,
