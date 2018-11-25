@@ -136,11 +136,14 @@ echo $err_log;
 
 ?>
 
-  <link type="text/css" rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" />
-  <link type="text/css" rel="stylesheet" href="https://cdn.datatables.net/1.10.19/css/dataTables.bootstrap.min.css" />
-  <script type="text/javascript" src="https://code.jquery.com/jquery-3.3.1.min.js"> </script>
-  <script type="text/javascript" src="https://cdn.datatables.net/1.10.18/js/jquery.dataTables.min.js"> </script>
-  <script type="text/javascript" src="https://cdn.datatables.net/1.10.18/js/dataTables.bootstrap4.min.js"> </script>
+<!--
+https://datatables.net/download/
+bootstrap3, jQuery3, Bootstrap3, DataTables, FixedHeaders
+Minify+Concatenate
+-->
+<link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/v/bs-3.3.7/jq-3.3.1/dt-1.10.18/fh-3.1.4/datatables.min.css"/>
+<script type="text/javascript" src="https://cdn.datatables.net/v/bs-3.3.7/jq-3.3.1/dt-1.10.18/fh-3.1.4/datatables.min.js"></script>
+
   <script type="text/javascript" src="jesp.js"> </script>
 </body>
 </html>
