@@ -22,7 +22,7 @@ $config = array_key_exists('c', $_GET) ?  $_GET['c'] : "config.json";
 $config = json_decode(file_get_contents($config), TRUE);
 if (! array_key_exists('title', $config))
     $config['title'] = 'Join, Evaluate, Sort, and Print Tables';
-echo "<h1 style='text-align: center'>$config[title]</h1>";
+echo "<h1 style='text-align: center'>$config[title]</h1>\n\n";
 
 if (! array_key_exists('keyprefix', $config))
     $config['keyprefix'] = '';
@@ -53,7 +53,7 @@ for ($i=0; $i<$N; ++$i) {
 echo "<table id='jesp_table' width=200px style='width: auto;' class='table table-striped table-bordered'>\n";
 echo "<thead>\n<tr><th>排序 ";
 foreach ($config['col'] as $col) echo "<th>$col[name] ";
-echo "\n</thead>\n\n<tbody>";
+echo "\n</thead>\n<tbody>\n";
 foreach ($MD as $pkey => $row) {
     # https://stackoverflow.com/questions/13036160/phps-array-map-including-keys
     # ok, I give up using array_merge and array_map
