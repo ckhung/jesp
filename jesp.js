@@ -5,12 +5,18 @@ var dtConfig = {
   'autoWidth': false,
   'table-layout': 'fixed',
   'fixedHeader': true,
-  'columnDefs': [ {
+  'columnDefs': [
+    // https://github.com/rstudio/DT/issues/354
+    {
+      'orderSequence': ['desc', 'asc'],
+      'targets': '_all'
+    },
+    {
      'searchable': false,
      'orderable': false,
      'targets': 0
-  } ],
-  'order': [[ 1, 'asc' ]]
+    }
+  ],
 };
 
 // https://datatables.net/examples/api/counter_columns.html
