@@ -23,7 +23,11 @@ $config = json_decode(file_get_contents($config), TRUE);
 if (! array_key_exists('title', $config))
     $config['title'] = 'Join, Evaluate, Sort, and Print Tables';
 echo "<h1 style='text-align: center'>$config[title]</h1>\n\n";
+?>
 
+<div class="center-block" id="canvas" style="width: 800px; height: 0px;"></div>
+
+<?php
 if (! array_key_exists('keyprefix', $config))
     $config['keyprefix'] = '';
 
@@ -91,7 +95,7 @@ echo "</tbody>\n</table>";
 function join_csv($table, $csvfn) {
     global $config;
     $F = fopen($csvfn, 'r');
-    $colnames = fgetcsv($F, 999, ",");
+    $colnames = array_map("trim", fgetcsv($F, 999, ","));
     $NC = count($colnames);
     while ($cols = fgetcsv($F, 999, ",")) {
 	if (preg_match('/^#/', $cols[0])) continue;
@@ -108,6 +112,10 @@ function join_csv($table, $csvfn) {
 	}
 	$pkey = $row[$config['pkey']];
 	$table[$pkey] = array_key_exists($pkey, $table) ?  array_merge($table[$pkey], $row) : $row;
+
+# for debugging...
+#	if (preg_match('/^s11/', $pkey))
+#	    print_r($table[$pkey]);
     }
     fclose($F);
     return $table;
@@ -141,8 +149,11 @@ https://datatables.net/download/
 bootstrap3, jQuery3, Bootstrap3, DataTables, FixedHeaders
 Minify+Concatenate
 -->
+
 <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/v/bs-3.3.7/jq-3.3.1/dt-1.10.18/fh-3.1.4/datatables.min.css"/>
 <script type="text/javascript" src="https://cdn.datatables.net/v/bs-3.3.7/jq-3.3.1/dt-1.10.18/fh-3.1.4/datatables.min.js"></script>
+  <script type="text/javascript" src="https://cdn.plot.ly/plotly-basic-latest.min.js" ></script>
+  <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/URI.js/1.19.1/URI.js" ></script>
 
   <script type="text/javascript" src="jesp.js"> </script>
 </body>
