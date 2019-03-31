@@ -29,7 +29,7 @@ echo "<h1 style='text-align: center'>$config[title]</h1>\n\n";
 
 <?php
 if (! array_key_exists('keyprefix', $config))
-    $config['keyprefix'] = '';
+    $config['keyprefix'] = 'z';
 
 # main dictionary $MD
 $MD = array();
@@ -70,7 +70,12 @@ foreach ($MD as $pkey => $row) {
     }
     # pass 2: eval expressions
     foreach ($config['col'] as $col) {
-	if (in_array($col, $config['textcols'])) continue;
+	if (in_array($col['name'], $config['textcols'])) {
+	    if  ($col['name'] === $config['pkey']) {
+		$row[$col['var']] = preg_replace("/^./", '', $row[$col['var']]);
+	    }
+	    continue;
+	}
 	if (array_key_exists('expr', $col)) {
 	    $row[$col['var']] = myeval($col['expr'], $row);
 	}
@@ -93,14 +98,15 @@ foreach ($MD as $pkey => $row) {
 echo "</tbody>\n</table>";
 
 function join_csv($table, $csvfn) {
-    global $config;
+    global $config, $err_log;
     $F = fopen($csvfn, 'r');
     $colnames = array_map("trim", fgetcsv($F, 999, ","));
     $NC = count($colnames);
+    # $err_log .= "$csvfn<br />";
     while ($cols = fgetcsv($F, 999, ",")) {
 	if (preg_match('/^#/', $cols[0])) continue;
 	$row = array();
-	for ($i=0; $i<$NC; ++$i) {
+	for ($i=0; $i<min($NC, count($cols)); ++$i) {
 	    $v = $cols[$i];
 	    if ($colnames[$i] === $config['pkey']) {
 		$row[$colnames[$i]] = "$config[keyprefix]$v";
@@ -140,7 +146,7 @@ function myeval($expr, $dict) {
     return $safeeval->evaluate($expr);
 }
 
-echo $err_log;
+echo "$err_log";
 
 ?>
 
