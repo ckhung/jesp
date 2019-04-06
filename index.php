@@ -133,11 +133,14 @@ function myeval($expr, $dict) {
     if (array_key_exists($expr, $dict))
 	return $dict[$expr];
     preg_match_all('/\b[a-z]\w+\b/i', $expr, $m);
+    # note: var name must be of length >= 2
+    # because Expression.php cannot handle vals like 1.2E-5
     foreach ($m[0] as $v) {
 	if (array_key_exists($v, $dict)) {
 	    if (preg_match('/\bnan\b/i', $dict[$v]))
 		return NAN;
-	    $expr = preg_replace("/$v/", '('.$dict[$v].')', $expr);
+	    $expr = preg_replace("/$v/", '('.sprintf("%.5f",$dict[$v]).')', $expr);
+	    # why sprintf? Because Expression.php cannot handle vals like 1.2E-5
 	} elseif (in_array($v, $allowed)) {
 	} else {
 	    return NAN;
