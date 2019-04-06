@@ -80,9 +80,10 @@ foreach ($MD as $pkey => $row) {
 	    $row[$col['var']] = myeval($col['expr'], $row);
 	}
 
-	if (! array_key_exists($col['var'], $row))
+	if (! array_key_exists($col['var'], $row)) {
 	    continue 2;
 	    # data is missing from certain files e.g. pkey=="s1469" is missing from 181123.csv
+	}
 
 	if (preg_match('/\bnan\b/i', $row[$col['var']]))
 	    continue 2;
@@ -131,7 +132,7 @@ function myeval($expr, $dict) {
     $allowed = array('abs', 'sqr');
     if (array_key_exists($expr, $dict))
 	return $dict[$expr];
-    preg_match_all('/\b[a-z]\w+\b/', $expr, $m);
+    preg_match_all('/\b[a-z]\w+\b/i', $expr, $m);
     foreach ($m[0] as $v) {
 	if (array_key_exists($v, $dict)) {
 	    if (preg_match('/\bnan\b/i', $dict[$v]))
