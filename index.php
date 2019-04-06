@@ -129,7 +129,7 @@ function join_csv($table, $csvfn) {
 }
 
 function myeval($expr, $dict) {
-    $allowed = array('abs', 'sqr');
+    $allowed = array('abs', 'sqr', 'max', 'min');
     if (array_key_exists($expr, $dict))
 	return $dict[$expr];
     preg_match_all('/\b[a-z]\w+\b/i', $expr, $m);
