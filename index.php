@@ -6,8 +6,13 @@
 </head>
 <body>
 
+</p>
+
 <?php
-require_once 'Expression.php';
+# https://installlion.com/ubuntu/xenial/universe/p/php-symfony-expression-language/install/index.html
+require 'ExpressionLanguage/autoload.php';
+use Symfony\Component\ExpressionLanguage\ExpressionLanguage;
+
 
 # https://stackoverflow.com/questions/14752470/creating-a-config-file-in-php
 # https://stackoverflow.com/questions/10148328/php-is-include-function-secure
@@ -33,8 +38,11 @@ if (! array_key_exists('keyprefix', $config))
 
 # main dictionary $MD
 $MD = array();
+# pkeys in each csv file
+$PKinF = array();
 foreach ($config['csvfiles'] as $csvfn) {
-    $MD = join_csv($MD, $csvfn);
+    preg_match('/([\w-]+)\.\w+$/', $csvfn, $m);
+    list($MD, $PKinF[$m[1]]) = join_csv($MD, $csvfn);
 }
 
 # echo "<pre>\n";
@@ -88,7 +96,8 @@ foreach ($MD as $pkey => $row) {
 	if (preg_match('/\bnan\b/i', $row[$col['var']]))
 	    continue 2;
     }
-    if (! myeval($config['keep'], $row)) continue;
+    if (array_key_exists('keep', $config) && !myeval($config['keep'], $row))
+	continue;
     echo("<tr><td> ");
     foreach ($config['col'] as $col) {
 	printf("<td>$col[format] ", $row[$col['var']]);
@@ -104,6 +113,7 @@ function join_csv($table, $csvfn) {
     $colnames = array_map("trim", fgetcsv($F, 999, ","));
     $NC = count($colnames);
     # $err_log .= "$csvfn<br />";
+    $keys_in_file = array();
     while ($cols = fgetcsv($F, 999, ",")) {
 	if (preg_match('/^#/', $cols[0])) continue;
 	$row = array();
@@ -119,34 +129,42 @@ function join_csv($table, $csvfn) {
 	}
 	$pkey = $row[$config['pkey']];
 	$table[$pkey] = array_key_exists($pkey, $table) ?  array_merge($table[$pkey], $row) : $row;
+	array_push($keys_in_file , $pkey);
 
 # for debugging...
 #	if (preg_match('/^s11/', $pkey))
 #	    print_r($table[$pkey]);
     }
     fclose($F);
-    return $table;
+    return array($table, $keys_in_file);
 }
 
 function myeval($expr, $dict) {
+    global $config, $PKinF;
     $allowed = array('abs', 'sqr', 'max', 'min');
     if (array_key_exists($expr, $dict))
 	return $dict[$expr];
-    preg_match_all('/\b[a-z]\w+\b/i', $expr, $m);
-    # note: var name must be of length >= 2
-    # because Expression.php cannot handle vals like 1.2E-5
+    $expr = preg_replace_callback(
+	'/pkin\(\s*(\w+)\s*\)/',
+	function ($m) use ($dict, $config, $PKinF) {
+	    return in_array($dict[$config['pkey']], $PKinF[$m[1]]) ? 1 : 0;
+	},
+	$expr
+    );
+    preg_match_all('/\b[a-z]\w*\b/i', $expr, $m);
+    # print_r(m);
     foreach ($m[0] as $v) {
 	if (array_key_exists($v, $dict)) {
 	    if (preg_match('/\bnan\b/i', $dict[$v]))
 		return NAN;
-	    $expr = preg_replace("/$v/", '('.sprintf("%.5f",$dict[$v]).')', $expr);
-	    # why sprintf? Because Expression.php cannot handle vals like 1.2E-5
+	    $expr = preg_replace("/$v/", '('.$dict[$v].')', $expr);
+	    # add parentheses to take care of negative numbers
 	} elseif (in_array($v, $allowed)) {
 	} else {
 	    return NAN;
 	}
     }
-    $safeeval = new Expression();
+    $safeeval = new ExpressionLanguage();
     return $safeeval->evaluate($expr);
 }
 

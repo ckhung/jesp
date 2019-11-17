@@ -7,11 +7,15 @@ jesp 讓你用一個 (共通的) primary key 把幾個 .csv 檔合併 (join) 起
 
 ## 安裝試用 ##
 
-你必須先安裝/啟用網頁伺服器 -- 例如 apache2。
-也請先確認你的網頁已能使用 php。
-(例如我在 ubuntu 18.04 底下， 要先 ```a2enmod php7.2``` 。)
-再把整個 jesp 目錄放到你的網站下， 例如 /var/www/html/jesp/
-然後把瀏覽器指向 http://localhost/jesp/ ， 就會看到一個表格。
+1. 安裝/啟用網頁伺服器 -- 例如 apache2。
+1. 確認你的網頁已能使用 php。
+   (例如我在 ubuntu 18.04 底下， 要先 ```a2enmod php7.2``` 。)
+1. 安裝 [Symfony ExpressionLanguage](https://symfony.com/doc/current/components/expression_language.html)。
+   以 ubuntu 及 debian 系列為例， 最簡單的方法是
+   ```apt install php-symfony-expression-language```
+1. 把整個 jesp 目錄放到你的網站下， 例如 /var/www/html/jesp/
+1. 在這個目錄底下建捷徑： ```ln -s /usr/share/php/Symfony/Component/ExpressionLanguage```
+1. 把瀏覽器指向 http://localhost/jesp/ ， 就會看到一個表格。
 
 顯示的表格是台股近年高現金殖利率個股的清單， 也就是
 [自己的明牌自己撈](https://newtoypia.blogspot.com/2018/08/calc.html)
@@ -36,12 +40,6 @@ div.csv 則是台股所有個股歷年現金股利表。
 而它們共同的主鍵則是 「代號」， 例如代表台積電的 2330。
 
 程式會去讀取每個 csv 檔， 並且用這個主鍵把所有的表格 join 在一起。
-如果資料表內的主鍵值是數字， 就必須用 ```keyprefix```
-指定一個字串加到每一列的主鍵前面讓它變成字串。
-例如 2330 就會變成 s2330。
-因為 php 不會分辨整數 2330 跟字串 "2330"，
-因此當這樣長像的數字/字串被拿來當成陣列註標時，
-會發生問題。 keyprefix 的目的就是要強制把它變成字串。
 
 資料表當中若有文字欄位， 必須把欄位名稱列在```textcols``` 陣列當中；
 其餘欄位一律被當成數字處理。
@@ -84,14 +82,16 @@ div.csv 則是台股所有個股歷年現金股利表。
    再點一次， 改成由小到大排列。
    若希望採用預設的 「點一次先由小到大、 點第二次由大到小」，
    可修改 jesp.js 的設定， 刪掉 orderSequence 那一段。
-2. 數值欄位當中若出現 nan， 整列資料會被略過。
+1. 數值欄位當中若出現 nan， 整列資料會被略過。
    資料若有欠欄位， 也會被略過。 這個問題以後再改進。
-3. 撰寫 ```expr``` 跟 ```keep``` 的運算式時， 有哪些內建數學函數可用？
-   請見 Expression.php 。 這外掛套件的目的是為了避免 eval 的資安危害。
-   我略修改其程式碼， 讓 ?: 三元運算子可用。
-4. 本程式省略各種錯誤檢查。 **即使只是設定檔寫錯， 也有可能讓畫面完全不見。**
+1. 本程式省略各種錯誤檢查。 **即使只是設定檔寫錯， 也有可能讓畫面完全不見。**
    使用者有可能經常需要 ```tail -f /var/log/apache2/error.log``` 以及
    [在瀏覽器裡打開 console](https://www.cyut.edu.tw/~ckhung/b/js/console.php)
    來自行除錯。 程式碼說明：
    [處處訝異的怪怪語言 php](https://newtoypia.blogspot.com/2018/11/php.html)、
    [DataTables 的固定表頭、 排名、 置中](https://newtoypia.blogspot.com/2018/11/datatables.html)。
+1. 因為 php 不會分辨整數 2330 跟字串 "2330"，
+   因此當這樣長像的數字/字串被拿來當成主鍵時， 會發生問題。
+   程式內會把主鍵前面都冠一某個英文字母 (z)；
+   在印出時又會把它刪掉。 應該不會影響使用者。
+   詳見程式碼中的 keyprefix。
